@@ -1,59 +1,72 @@
 import { connection } from "../infra/connection";
 
+//Tipos  (id? -> com ? sign. opcinal)
 
-//Tipos
-//definição de modelo (entidade) User
+//Definição do modelo (entidade) User
 export type User = {
-  id?: number,
-  name: string;
-  email: string;
-  password: string;
-  created_at?: string;
-  //esses são os atributos que serão apresentados no banco de dados.
+    id? : number;
+    name : string;
+    email : string;
+    password : string;
+    create_at? : string;
 }
 
-
-
-//Funçoes de conexão com banco
-/*CRUD -> 
-        C -> CREATE (inserir)
+//Funções de conexão com o banco
+/*
+CRUD -> C -> CREATE (inserir)
         R -> READ (leitura)
-        U -> UPADATE (atualizar)
+        U -> UPDATE (atualizar)
         D -> DELETE (apagar/deletar/excluir)
+    query -> retorna uma promessa"
+    await -> aguarda ela se comprir
 */
 
-
-//função  que insere um usuario na tabela usuario 
 export async function insert(user: User) {
-  //Dentro do .query() colocamos o codigo SQL 
-  //Se o código SQL precisar de dados via 
-  //Esses dados são passados usando $1 $2
-  //Os valores do $1 $2 etc são trocados pelos valores 
-  //que são passados no segundo parametro do .query()
-  //ex: query('$1, $2,) (['Valore1', 'valor2'])
-  await connection.query('INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4);',
-    [
-      user.name,
-      user.email,
-      user.password
-    ]
-  );
+   await connection.query('INSERT INTO usuario(nome, email, senha) VALUES ($1, $2, $3);', 
+        [
+            user.name,
+            user.email,
+            user.password,
+        ]
+    );
 }
 
-// função que recupera todos os usuarios do BD
+//recupera todos os usuarios do bd
 export async function getAll() {
-  const { rows } = await connection.query('SELECT * FROM users;');
-  return rows;
+    const { rows } = await connection.query('SELECT * FROM usuario;');
+    return rows;
 }
 
-//Função que atualiza dados de um usuario pelo ID.
+//Atualiza todos os dados do bd
 export async function update(user: User) {
-  await connection.query('UPDATE users SET name=$1, email=$2, password$3, role$4 WHERE id=$5 ',
-    [
-      user.name,
-      user.email,
-      user.password,
-      user.id
-    ]
-  );
+    await connection.query('UPDATE usuario SET name=$1, email=$2, password=$3, role=$4 WHERE id=$5;',
+        [
+            user.name,
+            user.email,
+            user.password,
+            user.id
+        ]
+    );  
 }
+
+//Apaga um usuario no banco pelo o seu ID
+export async function deleteById (id: string) {
+    await connection.query('DELETE FROM usuario WHERE id=$1', [id]);
+} 
+
+//Busca um usuario no banco pelo seu ID
+export async function getById (id:string) {
+    const {rows} = await connection.query (
+        'SELECT * FROM usuario WHERE id=$1', 
+        [id]
+    );
+    return rows[0];
+  }
+
+export async function getByEmail (Email:string) {
+    const {rows} = await connection.query (
+        'SELECT * FROM usuario WHERE email=$1', 
+        [Email]
+    );
+    return rows[0];
+  }

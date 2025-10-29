@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, show_list, show_login } from '../controllers/user_controller';
+import { register, show_list, show_login } from '../controller/user_controller';
 
 
 const userRoutes = Router();

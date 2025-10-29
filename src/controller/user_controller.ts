@@ -5,6 +5,7 @@
 // 4. comunicar com a camada MODEL 
 
 import { Request, Response } from "express";
+import { getByEmail, insert, User } from "../models/user";
 // import { getByEmail, insert, User } from "../models/user";
 // Parte  1 -> funções que carregam páginas
 
