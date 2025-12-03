@@ -5,7 +5,7 @@
 //4.comunicar com a camada MODEL
 
 import {Request, Response} from "express";
-import { Users, getByEmail, getByEmailAndPassword, insert } from "../models/user";
+import { Users, getByEmail, getByEmailAndPassword, insert } from "../models/users";
 import { UserRole } from "../enums/user_role";
 import { title } from "process";
 

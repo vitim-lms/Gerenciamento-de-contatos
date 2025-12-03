@@ -5,64 +5,109 @@
 // 4. comunicar com a camada MODEL 
 
 import { Request, Response } from "express";
-import { getByEmail, insert, User } from "../models/user";
+import { getByEmail, getByEmailAndPassword, insert, Users } from "../models/users";
 // import { getByEmail, insert, User } from "../models/user";
 // Parte  1 -> funções que carregam páginas
 
 // função que carregar a página login
-export function show_login(req: Request, res: Response) {
+
+export  function show_login(req: Request, res: Response) {
   res.render('login', {
-    message: null
-  });
-}
-// função que carrega a página de listagem de usuários
-export function show_list(req: Request, res: Response) {
-  res.render('listar_usuario');
+      message: null
+});
 }
 
-
-//parte 2 -> funções do CRUD
 export async function register(req: Request, res: Response) {
-  const { name, email, password } = req.body;
+  const {  name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.render('login', {
-      message: {
-        type: 'error',
-        value: 'Preencha corretamente os dados!',
-        title: 'dados invalidos'
-      }
-    });
+  if ( !name || !email || !password ) {
+      console.log({
+          message: {
+              type: 'error',
+              value: 'Preencha corretamente os dados!',
+              title: 'dados invalídos'
+          }
+      });
+      return res.render('login', {
+          message: {
+              type: 'error',
+              value: 'Preencha corretamente os dados!',
+              title: 'dados invalídos'
+          }
+      });
   }
-
- 
+  
   const userFounded = await getByEmail(email);
 
   if (userFounded) {
+      console.log({
+          message: {
+              type: 'error',
+               value: 'E-mail já cadastrado',
+              title: 'dados invalídos'
+          }
+      });
       return res.render('login', {
-      message: {
-        type: 'error',
-        value: 'E-mail já existe!',
-        title: 'dados invalidos'
-      }
-    });
+          message: {
+              type: 'error',
+               value: 'E-mail já cadastrado',
+              title: 'dados invalídos'
+          }
+      });
   }
-   
-  const user: User={
-    name,
-    email,
-    password
+
+  const user: Users={
+      name,
+      email,
+      password,
+      
   };
 
-  await insert(user)
-  
-
-
-  res.render('login', {
-      message: {
-        type: 'sucess',
-        value: 'Usuário cadastrado com sucesso!',
-        title: 'Sucesso'
-      }
-    });
+  await insert (user)
+  console.log('aqui.........................')
+   res.render('login', {
+       message: {
+              type: 'sucess',
+               value: 'usuário cadastrado com sucesso',
+              title: 'Sucesso'
+       }
+   });
 }
+export async function login(req: Request, res: Response) {
+  const {  email, senha } = req.body;
+
+  if ( !email || !senha ) {
+      return res.render('login', {
+          message: {
+              type: 'error',
+              value: 'Preencha todos os campos corretamente !',
+              title: 'dados invalídos'
+          }
+      });
+  }
+
+  const user = await getByEmailAndPassword(email, senha);
+
+  if ( !user) {
+      return res.render('login', {
+          message: {
+              type: 'error',
+              value: 'e-mail ou senha incorretos !',
+              title: 'dados invalídos'
+          }
+      });
+  }
+
+  (req.session as any).user = {
+      name: user.name,
+      email: user.email,
+      id: user.id
+  }
+
+  return res.redirect('/adm');
+
+}
+
+
+
+
